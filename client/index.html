@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" ng-app>
+
+<head>
+  <title>Optimus Github Report</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/bootstrap-responsive.min.css">
+  <style>
+    body {
+      padding-top: 60px;
+    }
+  </style>
+  <script>
+    function ChatController($scope) {
+      var socket = io.connect();
+
+      $scope.messages = [];
+      $scope.roster = [];
+      $scope.name = '';
+      $scope.text = '';
+
+      socket.on('connect', function() {
+        $scope.setName();
+      });
+
+      socket.on('message', function(msg) {
+        $scope.messages.push(msg);
+        $scope.$apply();
+      });
+
+      socket.on('roster', function(names) {
+        $scope.roster = names;
+        $scope.$apply();
+      });
+
+      $scope.send = function send() {
+        console.log('Sending message:', $scope.text);
+        socket.emit('auth', $scope.userid, $scope.password);
+      };
+
+      $scope.setName = function setName() {
+        socket.emit('identify', $scope.name);
+      };
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container" ng-controller="ChatController">
+    <div class="navbar navbar-fixed-top navbar-inverse">
+      <div class="navbar-inner">
+        <div class="pull-right">
+          <a href="http://www.optimusinfo.com" class="brand">Optimus</a>
+        </div>
+      </div>
+    </div>
+    <div class="page-header">
+      <h1>Github Utility</h1>
+    </div>
+    <form ng-submit="send()">
+      <div class="row">
+        <div class="span9">
+          <div class="span2">
+            User ID
+          </div>
+          <input type="text" class="span6" ng-model="userid" placeholder="User ID">
+          <div class="span2">
+            Password
+          </div>
+          <input type="password" class="span6" ng-model="password" placeholder="Password">
+          <div class="row controls">
+            <div class="input-append span7">
+              <input type="submit" class="span1 btn btn-primary" value="Send" ng-disabled="!(userid && password)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/jquery.min.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/angular.min.js"></script>
+</body>
+
+</html>

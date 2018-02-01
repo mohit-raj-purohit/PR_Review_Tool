@@ -1,1 +1,4 @@
-# PR_Review_Tool
+
+Run the server by: 
+
+node githubApi.js
